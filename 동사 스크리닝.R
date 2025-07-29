@@ -22,10 +22,20 @@ analyze_sentence_full <- function(sentence) {
   result$step2_fake_verb2 <- !grepl("please\\s+[a-z]+|can|may|should|would|will", sentence_lower)
 
   # Step 3: 수일치
-  must_be_singular <- grepl("to |ing|that", sentence_lower) || 
-                      grepl("amount|information|advice|news|equipment|furniture|homework|data", sentence_lower)
-  has_s_verb <- grepl("s\\b", sentence_lower)
-  result$step3_agreement <- if (must_be_singular) has_s_verb else TRUE
+  # ✅ 설명: 불가산 명사 또는 단수 취급해야 하는 주어 패턴
+# "uncountable noun"은 설명일 뿐, 실제 매칭에 사용되지 않음
+singular_subject_patterns <- c(
+  "to ",     # to 부정사
+  "ing",     # 동명사
+  "that",    # that절
+  # 아래는 대표적인 불가산 명사
+  "amount", "information", "advice", "news", 
+  "equipment", "furniture", "homework", "data"
+)
+
+# 주어가 단수로 간주될 수 있는지 확인
+must_be_singular <- any(sapply(singular_subject_patterns, grepl, sentence_lower))
+
 
   # Step 4: 수동태 패턴 확인
   passive_3_prep <- c("be surprised at", "be satisfied with", "be filled with", 
