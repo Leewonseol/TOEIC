@@ -2,4 +2,25 @@
 inform + 사람 + of	She informed me of the schedule.
 notify + 사람 + of	They notified us of the change.
 remind + 사람 + of	Please remind me of the deadline.
-convince+ 사람+ of I'm convinced of corporation will succed.
+convince+ 사람+ of I'm convinced of the corporation's success.
+
+
+| 동사           | 자주 쓰이는 부사 / 전치사구                        | 예문                                                 |
+| ------------ | --------------------------------------- | -------------------------------------------------- |
+| **rise**     | steadily, sharply, dramatically         | Prices **rose sharply** last month.                |
+| **behave**   | properly, badly, responsibly            | The child **behaved badly** in class.              |
+| **work**     | efficiently, hard, well, under pressure | He **works well under pressure**.                  |
+| **function** | properly, effectively, normally         | The new system **functions properly**.             |
+| **expire**   | soon, on (date), after 2 years          | My passport **expired on June 30th**.              |
+| **depart**   | from, at (시간), on schedule              | The train **departed from platform 3**.            |
+| **appear**   | suddenly, to be, at first glance        | She **appeared suddenly** at the door.             |
+| **go**       | well, smoothly, wrong, unnoticed        | The meeting **went smoothly**.                     |
+| **proceed**  | with, to, according to plan             | We will **proceed with** the next phase.           |
+| **commence** | at, on (날짜), with                       | The event **commenced at 9 a.m.**                  |
+| **diminish** | gradually, significantly, over time     | Interest in the topic **diminished over time**.    |
+| **vary**     | widely, according to, greatly           | Prices **vary greatly** depending on the location. |
+| **differ**   | from, in, between, significantly        | Opinions **differ from person to person**.         |
+| **arise**    | suddenly, from, unexpectedly            | Problems **arose unexpectedly** during the test.   |
+| **happen**   | suddenly, by chance, again              | Accidents can **happen suddenly**.                 |
+| **emerge**   | from, suddenly, as                      | A solution **emerged from** the discussion.        |
+| **fall**     | sharply, steadily, drastically          | Sales **fell drastically** in the last quarter.    |
