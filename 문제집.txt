@@ -2,3 +2,4 @@
 inform + 사람 + of	She informed me of the schedule.
 notify + 사람 + of	They notified us of the change.
 remind + 사람 + of	Please remind me of the deadline.
+convince+ 사람+ of I'm convinced of corporation will succed.
