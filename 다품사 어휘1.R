@@ -578,13 +578,23 @@ digraph {
   finance_verb -> finance_verb_support;
 }
 '
-# 2개씩 한 화면에 출력
 n <- length(dot_sources)
+
 for (i in seq(1, n, by = 2)) {
   plots <- list()
+
+  # 첫 번째 그래프
   plots[[1]] <- grViz(dot_sources[[i]])
+
+  # 두 번째 그래프(존재할 때만)
   if (i + 1 <= n) {
     plots[[2]] <- grViz(dot_sources[[i + 1]])
   }
-  print(browsable(tagList(plots)))
+
+  # 한 화면에 2개씩 출력
+  print(
+    browsable(
+      tagList(plots)
+    )
+  )
 }
