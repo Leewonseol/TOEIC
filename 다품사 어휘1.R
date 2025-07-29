@@ -578,8 +578,6 @@ digraph {
   finance_verb -> finance_verb_support;
 }
 '
-)
-
 # 2개씩 한 화면에 출력
 n <- length(dot_sources)
 for (i in seq(1, n, by = 2)) {
@@ -589,28 +587,4 @@ for (i in seq(1, n, by = 2)) {
     plots[[2]] <- grViz(dot_sources[[i + 1]])
   }
   print(browsable(tagList(plots)))
-)
-  # install.packages(c("DiagrammeR","htmltools"))  # 설치되지 않았다면
-library(DiagrammeR)
-library(htmltools)
-
-# ... (dot_sources 리스트는 이전과 동일하게 사용) ...
-
-n <- length(dot_sources)
-for (i in seq(1, n, by = 2)) {
-  plots <- list()
-  plots[[1]] <- grViz(dot_sources[[i]])
-  if (i + 1 <= n) {
-    plots[[2]] <- grViz(dot_sources[[i + 1]])
-  }
-  # 좌우로 배치
-  print(
-    browsable(
-      div(
-        style = "display: flex; gap: 20px; align-items: flex-start;",
-        plots
-      )
-    )
-  )
-}
 }
