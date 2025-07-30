@@ -7,7 +7,7 @@ library(DiagrammeR)
 # 1. 단어별 품사·동의어 리스트 정의 -------------------------------------------
 synonyms <- list(
   Manual    = list(noun      = c("handbook", "guide"),
-                   adjective = c("written", "hand-operated")),
+                   adjective = c("by hand", "hand-operated")),
   Claim     = list(verb1 = c("assert", "maintain"),
                    noun  = c("assertion")),
   Associate = list(noun = c("colleague", "partner"),
