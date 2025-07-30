@@ -47,7 +47,7 @@ synonyms <- list(
                      verb  = c("create", "formulate")),
   Document    = list(noun = c("paper", "record"),
                      verb = c("record", "log")),
-  Commercial  = list(adjective = c("advertising", "business"),
+  Commercial  = list(adjective = c("trade", "business-related"),
                      noun      = c("ad", "advertisement")),
   Select      = list(noun      = c("elite", "choice"),
                      adjective = c("chosen", "exclusive")),
