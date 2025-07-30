@@ -33,7 +33,7 @@ synonyms <- list(
   Rate        = list(noun = c("ratio", "charge"),
                      verb = c("assess", "evaluate")),
   Monitor     = list(noun = c("screen", "display"),
-                     verb = c("observe", "track")),
+                     adjective = c("usual", "standard")),
   Regular     = list(noun = c("customer", "patron"),
                      verb = c("standardize", "normalize")),
   Charge      = list(noun1 = c("fee", "price"),
