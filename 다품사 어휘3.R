@@ -1,12 +1,10 @@
-# 0. 필요 패키지 설치·로드
-for (pkg in c("data.tree", "igraph", "ggraph")) {
-  if (!require(pkg, character.only = TRUE)) {
-    install.packages(pkg)
-    library(pkg, character.only = TRUE)
-  }
+# 0. 필요 패키지 설치·로드 ------------------------------------------------
+if (!requireNamespace("DiagrammeR", quietly = TRUE)) {
+  install.packages("DiagrammeR")
 }
+library(DiagrammeR)
 
-# 1. 단어별 품사·동의어 리스트 정의
+# 1. 단어별 품사·동의어 리스트 정의 -------------------------------------------
 synonyms <- list(
   Manual    = list(noun      = c("handbook", "guide"),
                    adjective = c("written", "hand-operated")),
@@ -64,50 +62,70 @@ synonyms <- list(
                    adjective = c("obvious", "transparent"))
 )
 
-# 2. 상→하 트리 + depth별 폰트 크기 적용 함수 (v5)
-plot_syn_tree_v5 <- function(word, syn_list) {
-  # 2-1. data.tree 로 노드 생성
-  root <- data.tree::Node$new(word)
-  for (pos in names(syn_list[[word]])) {
-    pos_node <- root$AddChild(pos)
-    for (syn in syn_list[[word]][[pos]]) {
-      pos_node$AddChild(syn)
+# 2. DOT 문자열 생성 함수 --------------------------------------------------
+#    - root_font, pos_font, leaf_font 으로 깊이별 글씨 크기 조정
+create_tree_dot <- function(word, senses,
+                            root_font = 16, pos_font = 12, leaf_font = 10) {
+  nodes <- edges <- character()
+  
+  # 2-1. 루트 노드
+  nodes <- c(nodes,
+    sprintf(
+      "\"%s\" [label=\"%s\", shape=box, style=filled, fillcolor=LightBlue, fontsize=%d];",
+      word, word, root_font
+    )
+  )
+  
+  # 2-2. 품사 → 동의어
+  for (pos in names(senses)) {
+    pos_id <- paste0(word, "::", pos)
+    # 품사 노드
+    nodes <- c(nodes,
+      sprintf(
+        "\"%s\" [label=\"%s\", shape=oval, style=filled, fillcolor=LightGray, fontsize=%d];",
+        pos_id, pos, pos_font
+      )
+    )
+    edges <- c(edges,
+      sprintf("\"%s\" -> \"%s\";", word, pos_id)
+    )
+    
+    # 동의어 노드
+    for (syn in senses[[pos]]) {
+      syn_id <- gsub("[^A-Za-z0-9]", "_", paste(word, pos, syn, sep = "_"))
+      nodes <- c(nodes,
+        sprintf(
+          "\"%s\" [label=\"%s\", shape=plaintext, fontsize=%d];",
+          syn_id, syn, leaf_font
+        )
+      )
+      edges <- c(edges,
+        sprintf("\"%s\" -> \"%s\";", pos_id, syn_id)
+      )
     }
   }
-
-  # 2-2. ToDataFrameNetwork → igraph
-  edges_df <- data.tree::ToDataFrameNetwork(root)
-  g        <- igraph::graph_from_data_frame(edges_df, directed = TRUE)
-  V(g)$label <- basename(V(g)$name)
-
-  # 2-3. layout_as_tree 로 좌표 계산 (루트가 위쪽)
-  coords_raw <- igraph::layout_as_tree(g,
-                                       root     = which(V(g)$label == word),
-                                       circular = FALSE)
-  colnames(coords_raw) <- c("x", "y")
-  # y축 뒤집기: y가 클수록 아래로
-  coords_raw[, "y"] <- max(coords_raw[, "y"]) - coords_raw[, "y"]
-
-  # 2-4. 깊이 계산 및 폰트 크기 매핑
-  V(g)$depth <- sapply(V(g)$name,
-                       function(p) length(strsplit(p, "/")[[1]]) - 1)
-  size_map   <- c("0" = 6, "1" = 5, "2" = 4)
-  V(g)$font_size <- size_map[as.character(pmin(V(g)$depth, 2))]
-
-  # 2-5. ggraph 로 플로팅
-  p <- ggraph::ggraph(g, layout = coords_raw) +
-       ggraph::geom_edge_link(color = "gray70", edge_width = 0.8) +
-       ggraph::geom_node_point(size = 3, color = "steelblue") +
-       ggraph::geom_node_text(aes(label = label, size = font_size),
-                              vjust = -0.3, family = "NanumGothic") +
-       ggplot2::scale_size_identity() +
-       ggplot2::theme_void() +
-       ggplot2::ggtitle(paste0("Top–Down Synonym Tree: ", word))
-
-  print(p)
+  
+  # 2-3. 전체 DOT 조립
+  dot <- paste(
+    "digraph SynTree {",
+    "  rankdir = TB;",
+    "  node [fontname=\"Helvetica\"];",
+    paste(nodes, collapse = "\n  "),
+    paste(edges, collapse = "\n  "),
+    "}", sep = "\n"
+  )
+  
+  return(dot)
 }
 
-# 3. 전체 단어 순차 시각화
+# 3. 순차 출력 루프 --------------------------------------------------------
 for (w in names(synonyms)) {
-  plot_syn_tree_v5(w, synonyms)
+  dot <- create_tree_dot(w, synonyms[[w]])
+  gr  <- DiagrammeR::grViz(dot)
+  
+  # 출력
+  print(gr)
+  
+  # Enter 대기
+  invisible(readline(prompt = "▶ Press <enter> to view next tree..."))
 }
