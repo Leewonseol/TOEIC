@@ -1,10 +1,8 @@
 # 0. 필요 패키지 설치·로드 --------------------------------
-for (pkg in c("DiagrammeR")) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    install.packages(pkg)
-  }
-  library(pkg, character.only = TRUE)
+if (!requireNamespace("DiagrammeR", quietly = TRUE)) {
+  install.packages("DiagrammeR")
 }
+library(DiagrammeR)
 
 # 1. 단어별 품사·동의어 리스트 정의 ---------------------------
 synonyms <- list(
@@ -32,14 +30,18 @@ synonyms <- list(
                      verb2 = c("notice", "observe")),
   Rate        = list(noun = c("ratio", "charge"),
                      verb = c("assess", "evaluate")),
-  Monitor     = list(noun = c("screen", "display"),
-                    (verb = c("supervise"),
+  Monitor     = list(   # ← 여기 수정
+    noun = c("screen", "display"),
+    verb = c("supervise")
+  ),
   Regular     = list(noun = c("customer", "patron"),
                      verb = c("standardize", "normalize")),
-  Charge      = list(noun1 = c("fee", "price"),
-                     noun2 = c("attack", "assault"),
-                     verb1 = c("bill", "invoice","debit),
-                     verb2 = c("rush", "hurry")),
+  Charge      = list(  # ← 여기서도 수정
+    noun1 = c("fee", "price"),
+    noun2 = c("attack", "assault"),
+    verb1 = c("bill", "invoice", "debit"),
+    verb2 = c("rush", "hurry")
+  ),
   Professional= list(noun      = c("expert", "specialist"),
                      adjective = c("qualified", "skilled")),
   Form        = list(noun1 = c("shape", "structure"),
@@ -83,7 +85,7 @@ synonyms <- list(
                      verb = c("induce", "bring about")),
   Ease        = list(verb = c("alleviate", "reduce"),
                      noun = c("comfort", "relief"))
-)
+)  # synonyms 리스트 끝
 
 # 2. DOT 문자열 생성 함수 ---------------------------
 create_tree_dot <- function(word, senses) {
@@ -122,11 +124,7 @@ create_tree_dot <- function(word, senses) {
 # 3. 한 화면에 하나씩 순차 출력 ---------------------------
 for (w in names(synonyms)) {
   dot <- create_tree_dot(w, synonyms[[w]])
-  gr <- DiagrammeR::grViz(dot)
-  
-  # 화면에 출력
+  gr  <- DiagrammeR::grViz(dot)
   print(gr)
-  
-  # 다음 트리 보기 전까지 대기
   invisible(readline(prompt = "▶ Press <enter> to view next tree..."))
 }
