@@ -1,3 +1,9 @@
+# 필요한 패키지 로드
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# 수정된 analyze_sentence_full 함수
 analyze_sentence_full <- function(sentence) {
   result <- list(sentence = sentence)
   sentence_lower <- tolower(sentence)
@@ -26,7 +32,7 @@ analyze_sentence_full <- function(sentence) {
                                 "equipment", "furniture", "homework", "data", "team", "group")
   must_be_singular <- any(sapply(singular_subject_patterns, grepl, sentence_lower))
   result$step3_agreement <- if (result$step0_imperative) {
-    TRUE  # 명령문은 수일치 검사 제외
+    TRUE  # 명령문은 수일치 제외
   } else if (must_be_singular) {
     grepl("\\s+is\\s+|\\s+has\\s+|\\s+[a-z]+s\\s+", sentence_lower)
   } else {
@@ -58,9 +64,9 @@ analyze_sentence_full <- function(sentence) {
     sapply(future, grepl, sentence_lower),
     sapply(future_perfect, grepl, sentence_lower),
     past_perf
-  ) || result$step0_imperative  # 명령문은 시제 단서 없어도 유효
+  ) || result$step0_imperative
   result$step5_tense_form <- if (result$step0_imperative) {
-    TRUE  # 명령문은 동사 원형 사용
+    TRUE
   } else if (any(sapply(present, grepl, sentence_lower))) {
     grepl("\\s+[a-z]+s\\s+|\\s+is\\s+|\\s+are\\s+", sentence_lower)
   } else if (any(sapply(past, grepl, sentence_lower))) {
@@ -86,7 +92,41 @@ analyze_sentence_full <- function(sentence) {
   return(as.data.frame(result))
 }
 
-# 문장 입력 예시
-analyze_sentence_full("Please take the survey.")
-analyze_sentence_full("The team monitors the system.")
-analyze_sentence_full("The client was invoiced $500.")
+# 여러 문장 분석
+sentences <- c(
+  "Please take the survey.",
+  "The team monitors the system.",
+  "The client was invoiced $500.",
+  "The team monitors the system yesterday."  # 시제 오류 문장 추가
+)
+results <- lapply(sentences, analyze_sentence_full)
+results_df <- bind_rows(results)
+
+# ggplot2를 사용한 시각화
+# 데이터 준비
+plot_data <- results_df %>%
+  select(sentence, step0_imperative, step1_subject_verb_order, step2_fake_verb1, 
+         step2_fake_verb2, step3_agreement, step5_tense_detected, step5_tense_form, final) %>%
+  pivot_longer(cols = starts_with("step"), names_to = "Step", values_to = "Result") %>%
+  mutate(Result = as.character(Result),  # 논리형을 문자열로 변환
+         Result = ifelse(is.na(Result), "NA", Result),
+         Final = case_when(
+           final == "✅ 문법상 가능" ~ "Valid",
+           final == "❌ 문법 오류 가능성 있음" ~ "Invalid",
+           final == "❌ 명령문 구조 오류" ~ "Invalid (Imperative Error)",
+           TRUE ~ final
+         ))
+
+# 막대 그래프 생성
+ggplot(plot_data, aes(x = sentence, y = Step, fill = Result)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  scale_fill_manual(values = c("TRUE" = "#4CAF50", "FALSE" = "#F44336", "NA" = "#B0BEC5")) +
+  geom_text(aes(label = Final), vjust = -0.5, check_overlap = TRUE) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title = element_text(size = 12),
+        legend.position = "top") +
+  labs(title = "Sentence Analysis Results",
+       x = "Sentence",
+       y = "Analysis Step",
+       fill = "Result")
