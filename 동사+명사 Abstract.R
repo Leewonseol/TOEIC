@@ -223,6 +223,373 @@ ggplot(abstract4_data_ttest, aes(x = Time, y = Mean_Satisfaction, fill = Time)) 
   ylim(0, 5.5) +
   geom_text(aes(label = Mean_Satisfaction), vjust = -2.5, size = 5)
 
+#_______________________________________________________________________________
+#
+# Abstract 5: 조직 의사결정과 운영 효율성
+#_______________________________________________________________________________
+
+# --- 시각화 1: 선임 분석가 유무에 따른 프로젝트 성공률 비교 (t-검정 결과) ---
+# 선임 분석가 지원팀 (M = 78.3, SD = 6.2) vs 미지원팀 (M = 68.1, SD = 8.4)
+abstract5_data_ttest <- data.frame(
+  Group = factor(c("선임 분석가 지원팀", "선임 분석가 미지원팀")),
+  Mean_Success = c(78.3, 68.1),
+  SD = c(6.2, 8.4)
+)
+
+# 오차 막대를 포함한 막대 그래프 생성
+ggplot(abstract5_data_ttest, aes(x = Group, y = Mean_Success, fill = Group)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(
+    aes(ymin = Mean_Success - SD, ymax = Mean_Success + SD),
+    width = 0.2,
+    linewidth = 0.8
+  ) +
+  labs(
+    title = "Abstract 5: 선임 분석가 지원에 따른 프로젝트 성공률",
+    subtitle = "선임 분석가가 있는 팀의 성공률이 유의미하게 높음 (오차막대: ±1 SD)",
+    x = "팀 유형",
+    y = "평균 프로젝트 성공률 (%)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  ylim(0, 100) +
+  geom_text(aes(label = paste0(Mean_Success, "%")), vjust = -1.5, size = 5)
+
+# --- 시각화 2: 역할 중복성과 만족도의 관계 (상관분석 결과) ---
+# r = -.38, p = .012
+# 음의 상관관계를 갖는 가상 데이터 생성 (N=60)
+set.seed(5)
+redundancy <- rnorm(60, mean = 5, sd = 1.5)
+satisfaction <- 8 - 0.7 * redundancy + rnorm(60, mean = 0, sd = 1)
+abstract5_data_corr <- data.frame(Redundancy = redundancy, Satisfaction = satisfaction)
+
+# 회귀선을 포함한 산점도 생성
+ggplot(abstract5_data_corr, aes(x = Redundancy, y = Satisfaction)) +
+  geom_point(alpha = 0.7, color = "darkgreen") +
+  geom_smooth(method = "lm", se = FALSE, color = "orange", linetype = "dashed") +
+  labs(
+    title = "Abstract 5: 역할 중복성과 직무 만족도의 관계",
+    subtitle = "역할 중복성이 높을수록 만족도가 감소하는 경향 (r = -0.38)",
+    x = "역할 중복성 점수 (가상)",
+    y = "직무 만족도 (가상)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(plot.title = element_text(face = "bold", size = 16))
+
+
+#_______________________________________________________________________________
+#
+# Abstract 6: 파트너십 형성과 전략적 성장
+#_______________________________________________________________________________
+
+# --- 시각화 1: 지원 스태프 교육 워크숍의 효과 (t-검정 결과) ---
+# 개입 후 (M = 4.2, SD = 0.6) vs 기준 시점 (M = 3.8, SD = 0.7)
+abstract6_data_ttest <- data.frame(
+  Time = factor(c("기준 시점", "워크숍 후"), levels = c("기준 시점", "워크숍 후")),
+  Mean_Competency = c(3.8, 4.2),
+  SD = c(0.7, 0.6)
+)
+
+# 오차 막대를 포함한 막대 그래프 생성
+ggplot(abstract6_data_ttest, aes(x = Time, y = Mean_Competency, fill = Time)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(
+    aes(ymin = Mean_Competency - SD, ymax = Mean_Competency + SD),
+    width = 0.2,
+    linewidth = 0.8
+  ) +
+  labs(
+    title = "Abstract 6: 교육 워크숍 전후 직원 역량 변화",
+    subtitle = "워크숍을 통해 직원 역량이 유의미하게 향상됨 (오차막대: ±1 SD)",
+    x = "시점",
+    y = "평균 역량 점수 (5점 척도)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  ylim(0, 5) +
+  geom_text(aes(label = Mean_Competency), vjust = -2.5, size = 5)
+
+# --- 시각화 2: 개인화된 고객 관여 활동의 효과 (ANOVA 결과) ---
+# F(2, 134) = 8.91, p < .001
+# ANOVA 결과에 부합하는 가상 데이터 생성
+abstract6_data_anova <- data.frame(
+  Group = factor(c("이전 주기", "표준 관여", "개인화 관여")),
+  Participants = c(100, 115, 137) # 37% 더 많은 참여자
+)
+
+# 막대 그래프 생성
+ggplot(abstract6_data_anova, aes(x = Group, y = Participants, fill = Group)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  labs(
+    title = "Abstract 6: 고객 관여 전략에 따른 참여자 수",
+    subtitle = "개인화된 관여 활동이 참여자 수를 유의미하게 증가시킴",
+    x = "관여 전략",
+    y = "참여자 수 (상대값)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  geom_text(aes(label = Participants), vjust = -0.5, size = 5)
+
+
+#_______________________________________________________________________________
+#
+# Abstract 7: 관광 진흥의 전략적 관리
+#_______________________________________________________________________________
+
+# --- 시각화 1: 캠페인 전후 관광객 방문 수 비교 (t-검정 결과) ---
+# 캠페인 후 (M = 2847, SD = 312) vs 기준 시점 (M = 2278, SD = 289)
+abstract7_data_visits <- data.frame(
+  Time = factor(c("기준 시점", "캠페인 후"), levels = c("기준 시점", "캠페인 후")),
+  Mean_Visits = c(2278, 2847),
+  SD = c(289, 312)
+)
+
+# 오차 막대를 포함한 막대 그래프 생성
+ggplot(abstract7_data_visits, aes(x = Time, y = Mean_Visits, fill = Time)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(
+    aes(ymin = Mean_Visits - SD, ymax = Mean_Visits + SD),
+    width = 0.2,
+    linewidth = 0.8
+  ) +
+  labs(
+    title = "Abstract 7: 캠페인 전후 월 평균 관광객 방문 수",
+    subtitle = "캠페인 후 관광객 수가 25% 증가 (오차막대: ±1 SD)",
+    x = "시점",
+    y = "월 평균 방문객 수"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  geom_text(aes(label = format(Mean_Visits, big.mark = ",")), vjust = -1.5, size = 5)
+
+# --- 시각화 2: 캠페인 전후 이해관계자 만족도 비교 (t-검정 결과) ---
+# 캠페인 후 (M = 4.3, SD = 0.6) vs 기준 시점 (M = 3.1, SD = 0.8)
+abstract7_data_satisfaction <- data.frame(
+  Time = factor(c("기준 시점", "캠페인 후"), levels = c("기준 시점", "캠페인 후")),
+  Mean_Satisfaction = c(3.1, 4.3),
+  SD = c(0.8, 0.6)
+)
+
+# 오차 막대를 포함한 막대 그래프 생성
+ggplot(abstract7_data_satisfaction, aes(x = Time, y = Mean_Satisfaction, fill = Time)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(
+    aes(ymin = Mean_Satisfaction - SD, ymax = Mean_Satisfaction + SD),
+    width = 0.2,
+    linewidth = 0.8
+  ) +
+  labs(
+    title = "Abstract 7: 캠페인 전후 이해관계자 만족도",
+    subtitle = "캠페인 후 만족도가 40% 증가 (오차막대: ±1 SD)",
+    x = "시점",
+    y = "평균 만족도 (5점 척도)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  ylim(0, 5.5) +
+  geom_text(aes(label = Mean_Satisfaction), vjust = -2, size = 5)
+
+
+#_______________________________________________________________________________
+#
+# Abstract 8: 학술 기관의 재무 관리 및 자원 배분
+#_______________________________________________________________________________
+
+# --- 시각화 1: 예산 배분 방식에 따른 자금 활용률 비교 (t-검정 결과) ---
+# 구조화된 방식 (M = 87.2, SD = 5.4) vs 전통적 방식 (M = 70.8, SD = 8.1)
+abstract8_data_budget <- data.frame(
+  Method = factor(c("전통적 방식", "구조화된 방식")),
+  Mean_Utilization = c(70.8, 87.2),
+  SD = c(8.1, 5.4)
+)
+
+# 오차 막대를 포함한 막대 그래프 생성
+ggplot(abstract8_data_budget, aes(x = Method, y = Mean_Utilization, fill = Method)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(
+    aes(ymin = Mean_Utilization - SD, ymax = Mean_Utilization + SD),
+    width = 0.2,
+    linewidth = 0.8
+  ) +
+  labs(
+    title = "Abstract 8: 예산 배분 방식에 따른 자금 활용률",
+    subtitle = "구조화된 예산 배분 방식이 23% 더 높은 활용률을 보임 (오차막대: ±1 SD)",
+    x = "예산 배분 방식",
+    y = "평균 자금 활용률 (%)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  ylim(0, 100) +
+  geom_text(aes(label = paste0(Mean_Utilization, "%")), vjust = -1.5, size = 5)
+
+# --- 시각화 2: 유연한 일정 관리와 이해관계자 만족도의 관계 (상관분석 결과) ---
+# r = .62, p < .001
+# 양의 상관관계를 갖는 가상 데이터 생성 (N=70)
+set.seed(8)
+flexibility <- rnorm(70, mean = 6, sd = 2)
+satisfaction_corr <- 2 + 0.8 * flexibility + rnorm(70, mean = 0, sd = 1)
+abstract8_data_corr <- data.frame(Flexibility = flexibility, Satisfaction = satisfaction_corr)
+
+# 회귀선을 포함한 산점도 생성
+ggplot(abstract8_data_corr, aes(x = Flexibility, y = Satisfaction)) +
+  geom_point(alpha = 0.7, color = "purple") +
+  geom_smooth(method = "lm", se = FALSE, color = "cyan", linetype = "solid") +
+  labs(
+    title = "Abstract 8: 일정 유연성과 이해관계자 만족도의 관계",
+    subtitle = "일정 관리 유연성이 높을수록 만족도가 증가하는 경향 (r = 0.62)",
+    x = "일정 유연성 점수 (가상)",
+    y = "이해관계자 만족도 (가상)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(plot.title = element_text(face = "bold", size = 16))
+
+
+#_______________________________________________________________________________
+#
+# Abstract 9: 제조업의 운영 관리 및 품질 관리
+#_______________________________________________________________________________
+
+# --- 시각화 1: 유지보수 전략에 따른 장비 고장률 비교 (t-검정 결과) ---
+# 사전 예방적 유지보수 (M = 2.1) vs 사후 대응적 유지보수 (M = 3.6)
+abstract9_data_maintenance <- data.frame(
+  Method = factor(c("사후 대응적", "사전 예방적")),
+  Mean_Failures = c(3.6, 2.1),
+  SD = c(1.8, 1.2)
+)
+
+# 오차 막대를 포함한 막대 그래프 생성
+ggplot(abstract9_data_maintenance, aes(x = Method, y = Mean_Failures, fill = Method)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(
+    aes(ymin = Mean_Failures - SD, ymax = Mean_Failures + SD),
+    width = 0.2,
+    linewidth = 0.8
+  ) +
+  labs(
+    title = "Abstract 9: 유지보수 전략에 따른 월 평균 장비 고장 횟수",
+    subtitle = "사전 예방적 유지보수가 고장률을 31% 감소시킴 (오차막대: ±1 SD)",
+    x = "유지보수 전략",
+    y = "월 평균 고장 횟수"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  geom_text(aes(label = Mean_Failures), vjust = -1.5, size = 5)
+
+# --- 시각화 2: 디지털 추적 시스템 도입 전후 정시 납품률 비교 (t-검정 결과) ---
+# 도입 후 (M = 92.8, SD = 4.1) vs 도입 전 (M = 73.4, SD = 6.2)
+abstract9_data_delivery <- data.frame(
+  Time = factor(c("도입 전", "도입 후"), levels = c("도입 전", "도입 후")),
+  Mean_Rate = c(73.4, 92.8),
+  SD = c(6.2, 4.1)
+)
+
+# 오차 막대를 포함한 막대 그래프 생성
+ggplot(abstract9_data_delivery, aes(x = Time, y = Mean_Rate, fill = Time)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(
+    aes(ymin = Mean_Rate - SD, ymax = Mean_Rate + SD),
+    width = 0.2,
+    linewidth = 0.8
+  ) +
+  labs(
+    title = "Abstract 9: 디지털 추적 시스템 도입 전후 정시 납품률",
+    subtitle = "시스템 도입 후 정시 납품률이 27% 향상됨 (오차막대: ±1 SD)",
+    x = "시점",
+    y = "정시 납품률 (%)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  ylim(0, 100) +
+  geom_text(aes(label = paste0(Mean_Rate, "%")), vjust = -1.5, size = 5)
+
+
+#_______________________________________________________________________________
+#
+# Abstract 10: 의료 시스템의 기술 도입 및 성과 모니터링
+#_______________________________________________________________________________
+
+# --- 시각화 1: 전담 모니터링 팀 유무에 따른 시스템 배포 시간 비교 (t-검정 결과) ---
+# 전담팀 있음 (M = 45.2일) vs 전담팀 없음 (M = 68.9일)
+abstract10_data_deployment <- data.frame(
+  Group = factor(c("전담팀 없음", "전담팀 있음")),
+  Mean_Days = c(68.9, 45.2),
+  SD = c(12.4, 8.7)
+)
+
+# 오차 막대를 포함한 막대 그래프 생성
+ggplot(abstract10_data_deployment, aes(x = Group, y = Mean_Days, fill = Group)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(
+    aes(ymin = Mean_Days - SD, ymax = Mean_Days + SD),
+    width = 0.2,
+    linewidth = 0.8
+  ) +
+  labs(
+    title = "Abstract 10: 전담 모니터링 팀 유무에 따른 시스템 배포 시간",
+    subtitle = "전담팀이 있을 경우 배포 시간이 34% 더 빠름 (오차막대: ±1 SD)",
+    x = "전담 모니터링 팀 유무",
+    y = "평균 배포 소요 시간 (일)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  geom_text(aes(label = Mean_Days), vjust = -1.5, size = 5)
+
+# --- 시각화 2: 기술 도입 전후 환자 만족도 점수 비교 (t-검정 결과) ---
+# 도입 후 (M = 4.4, SD = 0.6) vs 도입 전 (M = 3.7, SD = 0.9)
+abstract10_data_satisfaction <- data.frame(
+  Time = factor(c("도입 전", "도입 후"), levels = c("도입 전", "도입 후")),
+  Mean_Score = c(3.7, 4.4),
+  SD = c(0.9, 0.6)
+)
+
+# 오차 막대를 포함한 막대 그래프 생성
+ggplot(abstract10_data_satisfaction, aes(x = Time, y = Mean_Score, fill = Time)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(
+    aes(ymin = Mean_Score - SD, ymax = Mean_Score + SD),
+    width = 0.2,
+    linewidth = 0.8
+  ) +
+  labs(
+    title = "Abstract 10: 기술 도입 전후 환자 만족도 점수",
+    subtitle = "기술 도입 후 환자 만족도가 유의미하게 향상됨 (오차막대: ±1 SD)",
+    x = "시점",
+    y = "평균 만족도 점수 (5점 척도)"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "none"
+  ) +
+  ylim(0, 5.5) +
+  geom_text(aes(label = Mean_Score), vjust = -2, size = 5)
 
 
 
